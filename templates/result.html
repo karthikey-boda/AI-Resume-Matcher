@@ -1,0 +1,1610 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Resume Analysis Results</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+
+    <style>
+
+        /* =========================================
+           RESULT PAGE
+        ========================================= */
+
+        .result-page {
+            background: #f5f7fb;
+            min-height: 100vh;
+        }
+
+        .result-container {
+            width: 92%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 45px 0 70px;
+        }
+
+
+        /* =========================================
+           HEADER
+        ========================================= */
+
+        .result-header {
+            background: #111827;
+            color: white;
+            border-radius: 16px;
+            padding: 35px;
+            margin-bottom: 25px;
+        }
+
+        .result-header h1 {
+            font-size: 34px;
+            margin: 0 0 8px;
+        }
+
+        .result-header p {
+            color: #d1d5db;
+            margin: 0;
+        }
+
+
+        /* =========================================
+           PANELS
+        ========================================= */
+
+        .panel {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 14px;
+            padding: 28px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04);
+        }
+
+        .panel h2 {
+            margin-top: 0;
+            margin-bottom: 8px;
+            font-size: 23px;
+        }
+
+        .section-description {
+            color: #6b7280;
+            margin-top: 0;
+            margin-bottom: 25px;
+        }
+
+
+        /* =========================================
+           SCORE CARDS
+        ========================================= */
+
+        .score-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 18px;
+            margin-bottom: 25px;
+        }
+
+        .score-card {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 22px;
+            text-align: center;
+        }
+
+        .score-card span {
+            display: block;
+            color: #6b7280;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+        .score-card strong {
+            display: block;
+            font-size: 30px;
+        }
+
+
+        /* =========================================
+           CLASSIFICATION
+        ========================================= */
+
+        .classification-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .classification-card {
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 22px;
+            background: #fafafa;
+        }
+
+        .classification-card span {
+            display: block;
+            color: #6b7280;
+            font-size: 13px;
+            margin-bottom: 8px;
+        }
+
+        .classification-card strong {
+            font-size: 22px;
+        }
+
+        .confidence {
+            margin-top: 8px;
+            font-size: 14px;
+            color: #4b5563;
+        }
+
+
+        /* =========================================
+           ANALYTICS
+        ========================================= */
+
+        .analytics-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+        }
+
+        .chart-container {
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 22px;
+            background: #ffffff;
+        }
+
+        .chart-container h3 {
+            margin-top: 0;
+            margin-bottom: 20px;
+        }
+
+        .chart-container canvas {
+            max-height: 320px;
+        }
+
+
+        /* =========================================
+           SKILLS
+        ========================================= */
+
+        .skills-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+        }
+
+        .skill-box {
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 22px;
+        }
+
+        .skill-box h3 {
+            margin-top: 0;
+            margin-bottom: 15px;
+        }
+
+        .skill-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .skill-tag {
+            padding: 7px 11px;
+            background: #f3f4f6;
+            border-radius: 20px;
+            font-size: 13px;
+        }
+
+        .matched {
+            background: #ecfdf5;
+            color: #047857;
+        }
+
+        .missing {
+            background: #fef2f2;
+            color: #b91c1c;
+        }
+
+        .empty-message {
+            color: #6b7280;
+            font-size: 14px;
+        }
+
+
+        /* =========================================
+           SCORE BREAKDOWN
+        ========================================= */
+
+        .breakdown-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 18px;
+        }
+
+        .breakdown-card {
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        .breakdown-card h3 {
+            margin-top: 0;
+            font-size: 16px;
+        }
+
+        .breakdown-score {
+            font-size: 25px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .breakdown-card p {
+            color: #6b7280;
+            font-size: 13px;
+        }
+
+
+        /* =========================================
+           SKILL GAP
+        ========================================= */
+
+        .skill-gap-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .skill-gap-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 18px;
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
+        }
+
+        .skill-gap-name {
+            font-weight: 600;
+        }
+
+        .priority {
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .priority-high {
+            background: #fee2e2;
+            color: #b91c1c;
+        }
+
+        .priority-medium {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .priority-low {
+            background: #e0e7ff;
+            color: #3730a3;
+        }
+
+
+        /* =========================================
+           ROADMAP
+        ========================================= */
+
+        .roadmap-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 18px;
+        }
+
+        .roadmap-card {
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        .roadmap-card h3 {
+            margin-top: 0;
+            margin-bottom: 8px;
+        }
+
+        .roadmap-card p {
+            color: #6b7280;
+            font-size: 14px;
+        }
+
+        .roadmap-level {
+            display: inline-block;
+            margin-bottom: 10px;
+            padding: 5px 9px;
+            border-radius: 15px;
+            background: #eef2ff;
+            color: #4338ca;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .resource-list {
+            padding-left: 18px;
+            color: #4b5563;
+            font-size: 14px;
+        }
+
+
+        /* =========================================
+           RESUME STATS
+        ========================================= */
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 15px;
+        }
+
+        .stat-card {
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
+            padding: 18px;
+            background: #fafafa;
+        }
+
+        .stat-card span {
+            display: block;
+            color: #6b7280;
+            font-size: 12px;
+            margin-bottom: 7px;
+        }
+
+        .stat-card strong {
+            font-size: 22px;
+        }
+
+
+        /* =========================================
+           JOB RECOMMENDATIONS
+        ========================================= */
+
+        .job-list {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+
+        .job-card {
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 22px;
+            background: white;
+        }
+
+        .job-card-header {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+        }
+
+        .job-card h3 {
+            margin: 0 0 5px;
+            font-size: 19px;
+        }
+
+        .job-company {
+            color: #6b7280;
+            font-size: 14px;
+        }
+
+        .job-location {
+            color: #6b7280;
+            font-size: 13px;
+            margin-top: 5px;
+        }
+
+        .job-match {
+            font-size: 23px;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .job-score-details {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-top: 18px;
+        }
+
+        .job-score-item {
+            padding: 12px;
+            background: #f9fafb;
+            border-radius: 8px;
+        }
+
+        .job-score-item span {
+            display: block;
+            color: #6b7280;
+            font-size: 11px;
+            margin-bottom: 4px;
+        }
+
+        .job-score-item strong {
+            font-size: 14px;
+        }
+
+        .job-actions {
+            margin-top: 18px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .job-button {
+            display: inline-block;
+            padding: 9px 14px;
+            border-radius: 7px;
+            background: #111827;
+            color: white;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .job-button.secondary {
+            background: #f3f4f6;
+            color: #111827;
+        }
+
+
+        /* =========================================
+           BOTTOM BUTTONS
+        ========================================= */
+
+        .bottom-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .bottom-button {
+            display: inline-block;
+            padding: 12px 20px;
+            border-radius: 8px;
+            background: #111827;
+            color: white;
+            font-weight: 600;
+        }
+
+        .bottom-button.secondary {
+            background: white;
+            color: #111827;
+            border: 1px solid #d1d5db;
+        }
+
+
+        /* =========================================
+           RESPONSIVE
+        ========================================= */
+
+        @media (max-width: 1000px) {
+
+            .score-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+
+            .job-score-details {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+        }
+
+
+        @media (max-width: 750px) {
+
+            .classification-grid,
+            .analytics-grid,
+            .skills-grid,
+            .roadmap-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .breakdown-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .job-card-header {
+                flex-direction: column;
+            }
+
+        }
+
+
+        @media (max-width: 500px) {
+
+            .result-container {
+                width: 94%;
+                padding-top: 25px;
+            }
+
+            .panel {
+                padding: 20px;
+            }
+
+            .result-header {
+                padding: 25px 20px;
+            }
+
+            .result-header h1 {
+                font-size: 26px;
+            }
+
+            .score-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .job-score-details {
+                grid-template-columns: 1fr;
+            }
+
+            .bottom-buttons {
+                flex-direction: column;
+            }
+
+            .bottom-button {
+                text-align: center;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+<div class="result-page">
+
+
+    <div class="result-container">
+
+
+        <!-- =========================================
+             HEADER
+        ========================================== -->
+
+        <div class="result-header">
+
+            <h1>
+                Resume Analysis Results
+            </h1>
+
+            <p>
+                AI-powered analysis of your resume against the
+                selected job description.
+            </p>
+
+        </div>
+
+
+
+        <!-- =========================================
+             OVERALL SCORE
+        ========================================== -->
+
+        <div class="score-grid">
+
+
+            <div class="score-card">
+
+                <span>
+                    Overall Match
+                </span>
+
+                <strong>
+                    {{ match_score|default(0) }}%
+                </strong>
+
+            </div>
+
+
+            <div class="score-card">
+
+                <span>
+                    Skill Match
+                </span>
+
+                <strong>
+                    {{ skill_match_percentage|default(0) }}%
+                </strong>
+
+            </div>
+
+
+            <div class="score-card">
+
+                <span>
+                    Text Similarity
+                </span>
+
+                <strong>
+                    {{ text_similarity|default(0) }}%
+                </strong>
+
+            </div>
+
+
+            <div class="score-card">
+
+                <span>
+                    Category Match
+                </span>
+
+                <strong>
+                    {{ category_match|default(0) }}%
+                </strong>
+
+            </div>
+
+
+        </div>
+
+
+
+        <!-- =========================================
+             AI CLASSIFICATION
+        ========================================== -->
+
+        <div class="panel">
+
+            <h2>
+                AI Job Classification
+            </h2>
+
+            <p class="section-description">
+                Predicted job categories based on resume and
+                job description content.
+            </p>
+
+
+            <div class="classification-grid">
+
+
+                <div class="classification-card">
+
+                    <span>
+                        Resume Category
+                    </span>
+
+                    <strong>
+                        {{ resume_category|default("Unknown") }}
+                    </strong>
+
+                    <div class="confidence">
+
+                        Confidence:
+                        {{ resume_category_confidence|default(0) }}%
+
+                    </div>
+
+                </div>
+
+
+                <div class="classification-card">
+
+                    <span>
+                        Job Category
+                    </span>
+
+                    <strong>
+                        {{ job_category|default("Unknown") }}
+                    </strong>
+
+                    <div class="confidence">
+
+                        Confidence:
+                        {{ category_confidence|default(0) }}%
+
+                    </div>
+
+                </div>
+
+
+            </div>
+
+        </div>
+
+
+
+        <!-- =========================================
+             ANALYTICS
+        ========================================== -->
+
+        <div class="panel">
+
+            <h2>
+                Resume Match Analytics
+            </h2>
+
+            <p class="section-description">
+                Visual representation of your resume matching metrics.
+            </p>
+
+
+            <div class="analytics-grid">
+
+
+                <div class="chart-container">
+
+                    <h3>
+                        Match Score Overview
+                    </h3>
+
+                    <canvas id="matchChart"></canvas>
+
+                </div>
+
+
+                <div class="chart-container">
+
+                    <h3>
+                        Skill Analysis
+                    </h3>
+
+                    <canvas id="skillChart"></canvas>
+
+                </div>
+
+
+            </div>
+
+        </div>
+
+
+
+        <!-- =========================================
+             RESUME STATISTICS
+        ========================================== -->
+
+        <div class="panel">
+
+            <h2>
+                Resume Statistics
+            </h2>
+
+            <p class="section-description">
+                Basic information extracted from your resume.
+            </p>
+
+
+            <div class="stats-grid">
+
+
+                <div class="stat-card">
+
+                    <span>
+                        Resume Words
+                    </span>
+
+                    <strong>
+                        {{ resume_stats.word_count|default(0) }}
+                    </strong>
+
+                </div>
+
+
+                <div class="stat-card">
+
+                    <span>
+                        Resume Skills
+                    </span>
+
+                    <strong>
+                        {{ resume_stats.total_skills|default(0) }}
+                    </strong>
+
+                </div>
+
+
+                <div class="stat-card">
+
+                    <span>
+                        Required Skills
+                    </span>
+
+                    <strong>
+                        {{ resume_stats.job_skills|default(0) }}
+                    </strong>
+
+                </div>
+
+
+                <div class="stat-card">
+
+                    <span>
+                        Matched Skills
+                    </span>
+
+                    <strong>
+                        {{ resume_stats.matched_skills|default(0) }}
+                    </strong>
+
+                </div>
+
+
+                <div class="stat-card">
+
+                    <span>
+                        Missing Skills
+                    </span>
+
+                    <strong>
+                        {{ resume_stats.missing_skills|default(0) }}
+                    </strong>
+
+                </div>
+
+
+            </div>
+
+        </div>
+
+
+
+        <!-- =========================================
+             SCORE BREAKDOWN
+        ========================================== -->
+
+        <div class="panel">
+
+            <h2>
+                Score Breakdown
+            </h2>
+
+            <p class="section-description">
+                How the overall match score is calculated.
+            </p>
+
+
+            <div class="breakdown-grid">
+
+
+                <div class="breakdown-card">
+
+                    <h3>
+                        Skill Match
+                    </h3>
+
+                    <div class="breakdown-score">
+                        {{ skill_match_percentage|default(0) }}%
+                    </div>
+
+                    <p>
+                        Skills contribute 50% to the final score.
+                    </p>
+
+                </div>
+
+
+                <div class="breakdown-card">
+
+                    <h3>
+                        Text Similarity
+                    </h3>
+
+                    <div class="breakdown-score">
+                        {{ text_similarity|default(0) }}%
+                    </div>
+
+                    <p>
+                        Resume and job description similarity
+                        contributes 30%.
+                    </p>
+
+                </div>
+
+
+                <div class="breakdown-card">
+
+                    <h3>
+                        Category Match
+                    </h3>
+
+                    <div class="breakdown-score">
+                        {{ category_match|default(0) }}%
+                    </div>
+
+                    <p>
+                        Job category relationship contributes 20%.
+                    </p>
+
+                </div>
+
+
+            </div>
+
+        </div>
+
+
+
+        <!-- =========================================
+             SKILLS
+        ========================================== -->
+
+        <div class="panel">
+
+            <h2>
+                Skills Analysis
+            </h2>
+
+            <p class="section-description">
+                Skills detected in your resume and required by
+                the job description.
+            </p>
+
+
+            <div class="skills-grid">
+
+
+                <!-- RESUME SKILLS -->
+
+                <div class="skill-box">
+
+                    <h3>
+                        Resume Skills
+                    </h3>
+
+
+                    {% if resume_skills %}
+
+                        <div class="skill-list">
+
+                            {% for skill in resume_skills %}
+
+                                <span class="skill-tag">
+                                    {{ skill }}
+                                </span>
+
+                            {% endfor %}
+
+                        </div>
+
+                    {% else %}
+
+                        <p class="empty-message">
+                            No skills detected.
+                        </p>
+
+                    {% endif %}
+
+                </div>
+
+
+
+                <!-- JOB SKILLS -->
+
+                <div class="skill-box">
+
+                    <h3>
+                        Required Job Skills
+                    </h3>
+
+
+                    {% if job_skills %}
+
+                        <div class="skill-list">
+
+                            {% for skill in job_skills %}
+
+                                <span class="skill-tag">
+                                    {{ skill }}
+                                </span>
+
+                            {% endfor %}
+
+                        </div>
+
+                    {% else %}
+
+                        <p class="empty-message">
+                            No skills detected from the job description.
+                        </p>
+
+                    {% endif %}
+
+                </div>
+
+
+
+                <!-- MATCHED -->
+
+                <div class="skill-box">
+
+                    <h3>
+                        Matched Skills
+                    </h3>
+
+
+                    {% if matched_skills %}
+
+                        <div class="skill-list">
+
+                            {% for skill in matched_skills %}
+
+                                <span class="skill-tag matched">
+                                    {{ skill }}
+                                </span>
+
+                            {% endfor %}
+
+                        </div>
+
+                    {% else %}
+
+                        <p class="empty-message">
+                            No matching skills found.
+                        </p>
+
+                    {% endif %}
+
+                </div>
+
+
+
+                <!-- MISSING -->
+
+                <div class="skill-box">
+
+                    <h3>
+                        Missing Skills
+                    </h3>
+
+
+                    {% if missing_skills %}
+
+                        <div class="skill-list">
+
+                            {% for skill in missing_skills %}
+
+                                <span class="skill-tag missing">
+                                    {{ skill }}
+                                </span>
+
+                            {% endfor %}
+
+                        </div>
+
+                    {% else %}
+
+                        <p class="empty-message">
+                            No missing skills.
+                        </p>
+
+                    {% endif %}
+
+                </div>
+
+
+            </div>
+
+        </div>
+
+
+
+        <!-- =========================================
+             SKILL GAP
+        ========================================== -->
+
+        <div class="panel">
+
+            <h2>
+                Skill Gap Analysis
+            </h2>
+
+            <p class="section-description">
+                Missing skills are prioritized according to
+                their importance.
+            </p>
+
+
+            {% if skill_gap and skill_gap.missing %}
+
+                <div class="skill-gap-list">
+
+                    {% for item in skill_gap.missing %}
+
+                        <div class="skill-gap-item">
+
+                            <span class="skill-gap-name">
+                                {{ item.skill }}
+                            </span>
+
+
+                            <span class="priority
+                                {% if item.priority == 'High' %}
+                                    priority-high
+                                {% elif item.priority == 'Medium' %}
+                                    priority-medium
+                                {% else %}
+                                    priority-low
+                                {% endif %}
+                            ">
+
+                                {{ item.priority }}
+
+                            </span>
+
+                        </div>
+
+                    {% endfor %}
+
+                </div>
+
+            {% else %}
+
+                <p class="empty-message">
+                    No skill gaps identified.
+                </p>
+
+            {% endif %}
+
+        </div>
+
+
+
+        <!-- =========================================
+             LEARNING ROADMAP
+        ========================================== -->
+
+        <div class="panel">
+
+            <h2>
+                Learning Roadmap
+            </h2>
+
+            <p class="section-description">
+                Recommended learning areas based on your skill gaps.
+            </p>
+
+
+            {% if recommendations %}
+
+                <div class="roadmap-grid">
+
+                    {% for recommendation in recommendations %}
+
+                        <div class="roadmap-card">
+
+                            <span class="roadmap-level">
+                                {{ recommendation.level }}
+                            </span>
+
+                            <h3>
+                                {{ recommendation.skill }}
+                            </h3>
+
+                            <p>
+                                {{ recommendation.reason }}
+                            </p>
+
+
+                            {% if recommendation.resources %}
+
+                                <strong>
+                                    Suggested Resources
+                                </strong>
+
+                                <ul class="resource-list">
+
+                                    {% for resource in recommendation.resources %}
+
+                                        <li>
+                                            {{ resource }}
+                                        </li>
+
+                                    {% endfor %}
+
+                                </ul>
+
+                            {% endif %}
+
+                        </div>
+
+                    {% endfor %}
+
+                </div>
+
+            {% else %}
+
+                <p class="empty-message">
+                    No learning recommendations available.
+                </p>
+
+            {% endif %}
+
+        </div>
+
+
+
+        <!-- =========================================
+             JOB RECOMMENDATIONS
+        ========================================== -->
+
+        <div class="panel">
+
+            <h2>
+                Recommended Jobs
+            </h2>
+
+            <p class="section-description">
+                Jobs selected based on your resume category,
+                skills, title relevance and text similarity.
+            </p>
+
+
+            {% if job_recommendations %}
+
+                <div class="job-list">
+
+
+                    {% for job in job_recommendations %}
+
+                        <div class="job-card">
+
+
+                            <div class="job-card-header">
+
+                                <div>
+
+                                    <h3>
+                                        {{ job.title }}
+                                    </h3>
+
+                                    <div class="job-company">
+
+                                        {{ job.company_name }}
+
+                                    </div>
+
+                                    <div class="job-location">
+
+                                        📍 {{ job.location }}
+
+                                    </div>
+
+                                </div>
+
+
+                                <div class="job-match">
+
+                                    {{ job.match_score }}%
+
+                                </div>
+
+                            </div>
+
+
+
+                            <div class="job-score-details">
+
+
+                                <div class="job-score-item">
+
+                                    <span>
+                                        Skill Match
+                                    </span>
+
+                                    <strong>
+                                        {{ job.skill_score }}%
+                                    </strong>
+
+                                </div>
+
+
+                                <div class="job-score-item">
+
+                                    <span>
+                                        Text Similarity
+                                    </span>
+
+                                    <strong>
+                                        {{ job.text_score }}%
+                                    </strong>
+
+                                </div>
+
+
+                                <div class="job-score-item">
+
+                                    <span>
+                                        Category Match
+                                    </span>
+
+                                    <strong>
+                                        {{ job.category_score }}%
+                                    </strong>
+
+                                </div>
+
+
+                                <div class="job-score-item">
+
+                                    <span>
+                                        Title Relevance
+                                    </span>
+
+                                    <strong>
+                                        {{ job.title_score }}%
+                                    </strong>
+
+                                </div>
+
+
+                            </div>
+
+
+
+                            <div class="job-actions">
+
+
+                                <a
+                                    href="/job/{{ job.job_id }}"
+                                    class="job-button"
+                                >
+                                    View Details
+                                </a>
+
+
+                                {% if job.application_url %}
+
+                                    <a
+                                        href="{{ job.application_url }}"
+                                        target="_blank"
+                                        class="job-button secondary"
+                                    >
+                                        Apply
+                                    </a>
+
+                                {% elif job.job_posting_url %}
+
+                                    <a
+                                        href="{{ job.job_posting_url }}"
+                                        target="_blank"
+                                        class="job-button secondary"
+                                    >
+                                        View Posting
+                                    </a>
+
+                                {% endif %}
+
+
+                            </div>
+
+
+                        </div>
+
+                    {% endfor %}
+
+
+                </div>
+
+            {% else %}
+
+                <p class="empty-message">
+                    No related jobs found.
+                </p>
+
+            {% endif %}
+
+        </div>
+
+
+
+        <!-- =========================================
+             BOTTOM BUTTONS
+        ========================================== -->
+
+        <div class="bottom-buttons">
+
+            <a
+                href="/"
+                class="bottom-button"
+            >
+                Analyze Another Resume
+            </a>
+
+
+            <a
+                href="/history"
+                class="bottom-button secondary"
+            >
+                View Analysis History
+            </a>
+
+        </div>
+
+
+    </div>
+
+</div>
+
+
+
+<!-- =========================================
+     CHARTS
+========================================= -->
+
+<script>
+
+    const matchScore =
+        {{ match_score|default(0) }};
+
+    const textSimilarity =
+        {{ text_similarity|default(0) }};
+
+    const skillMatch =
+        {{ skill_match_percentage|default(0) }};
+
+    const categoryMatch =
+        {{ category_match|default(0) }};
+
+    const matchedSkills =
+        {{ matched_skills|length }};
+
+    const missingSkills =
+        {{ missing_skills|length }};
+
+
+
+    /* =========================================
+       MATCH CHART
+    ========================================== */
+
+    const matchChartElement =
+        document.getElementById("matchChart");
+
+
+    if (matchChartElement) {
+
+        new Chart(
+            matchChartElement,
+            {
+
+                type: "bar",
+
+                data: {
+
+                    labels: [
+                        "Overall Match",
+                        "Text Similarity",
+                        "Skill Match",
+                        "Category Match"
+                    ],
+
+                    datasets: [
+
+                        {
+
+                            label: "Score (%)",
+
+                            data: [
+                                matchScore,
+                                textSimilarity,
+                                skillMatch,
+                                categoryMatch
+                            ]
+
+                        }
+
+                    ]
+
+                },
+
+                options: {
+
+                    responsive: true,
+
+                    scales: {
+
+                        y: {
+
+                            beginAtZero: true,
+
+                            max: 100
+
+                        }
+
+                    }
+
+                }
+
+            }
+        );
+
+    }
+
+
+
+    /* =========================================
+       SKILL CHART
+    ========================================== */
+
+    const skillChartElement =
+        document.getElementById("skillChart");
+
+
+    if (skillChartElement) {
+
+        new Chart(
+            skillChartElement,
+            {
+
+                type: "doughnut",
+
+                data: {
+
+                    labels: [
+                        "Matched Skills",
+                        "Missing Skills"
+                    ],
+
+                    datasets: [
+
+                        {
+
+                            data: [
+                                matchedSkills,
+                                missingSkills
+                            ]
+
+                        }
+
+                    ]
+
+                },
+
+                options: {
+
+                    responsive: true
+
+                }
+
+            }
+        );
+
+    }
+
+</script>
+
+
+</body>
+
+</html>

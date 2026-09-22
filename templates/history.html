@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Analysis History</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body>
+
+<nav class="navbar">
+
+    <div class="nav-container">
+
+        <div class="logo">
+            AI Resume Matcher
+        </div>
+
+        <div class="nav-links">
+
+            <a href="/">
+                Home
+            </a>
+
+            <a href="/history">
+                History
+            </a>
+
+        </div>
+
+    </div>
+
+</nav>
+
+
+<div class="history-container">
+
+    <!-- Header -->
+
+    <div class="history-header">
+
+        <div>
+
+            <h1>
+                Analysis History
+            </h1>
+
+            <p>
+                Track your previous resume analyses and identify
+                recurring skill gaps.
+            </p>
+
+        </div>
+
+        <a href="/"
+           class="bottom-button">
+
+            New Analysis
+
+        </a>
+
+    </div>
+
+    <form action="/clear-history" method="POST"
+      onsubmit="return confirm('Are you sure you want to clear all analysis history?');">
+    <button type="submit" class="clear-history-btn">
+        Clear History
+    </button>
+</form>
+
+
+    <!-- Statistics -->
+
+    <div class="history-stats">
+
+        <div class="history-stat-card">
+
+            <span>
+                Total Analyses
+            </span>
+
+            <strong>
+                {{ history_stats.total }}
+            </strong>
+
+        </div>
+
+
+        <div class="history-stat-card">
+
+            <span>
+                Average Match Score
+            </span>
+
+            <strong>
+                {{ history_stats.average_match_score }}%
+            </strong>
+
+        </div>
+
+
+        <div class="history-stat-card">
+
+            <span>
+                Average Skill Match
+            </span>
+
+            <strong>
+                {{ history_stats.average_skill_match }}%
+            </strong>
+
+        </div>
+
+
+        <div class="history-stat-card">
+
+            <span>
+                Job Categories
+            </span>
+
+            <strong>
+                {{ history_stats.top_categories|length }}
+            </strong>
+
+        </div>
+
+    </div>
+
+
+    <!-- History Analytics -->
+
+    {% if history_stats.total > 0 %}
+
+    <div class="history-analytics-grid">
+
+
+        <!-- Top Categories -->
+
+        <div class="panel">
+
+            <h2>
+                Most Analyzed Job Categories
+            </h2>
+
+            <p class="section-description">
+                Job categories predicted across your previous analyses.
+            </p>
+
+            <ul class="history-list">
+
+                {% for category, count in history_stats.top_categories %}
+
+                <li>
+
+                    <span>
+                        {{ category }}
+                    </span>
+
+                    <strong>
+                        {{ count }}
+                    </strong>
+
+                </li>
+
+                {% endfor %}
+
+            </ul>
+
+        </div>
+
+
+        <!-- Missing Skills -->
+
+        <div class="panel">
+
+            <h2>
+                Frequently Missing Skills
+            </h2>
+
+            <p class="section-description">
+                Skills that appeared most frequently as missing
+                requirements.
+            </p>
+
+            <ul class="history-list">
+
+                {% for skill, count in history_stats.top_missing_skills %}
+
+                <li>
+
+                    <span>
+                        {{ skill }}
+                    </span>
+
+                    <strong>
+                        {{ count }}
+                    </strong>
+
+                </li>
+
+                {% endfor %}
+
+            </ul>
+
+        </div>
+
+    </div>
+
+    {% endif %}
+
+
+    <!-- Analysis Table -->
+
+    {% if analyses %}
+
+    <div class="history-table-container">
+
+        <table class="history-table">
+
+            <thead>
+
+                <tr>
+
+                    <th>
+                        Resume
+                    </th>
+
+                    <th>
+                        Match Score
+                    </th>
+
+                    <th>
+                        Skill Match
+                    </th>
+
+                    <th>
+                        Job Category
+                    </th>
+
+                    <th>
+                        Confidence
+                    </th>
+
+                    <th>
+                        Date
+                    </th>
+
+                </tr>
+
+            </thead>
+
+
+            <tbody>
+
+                {% for analysis in analyses %}
+
+                <tr>
+
+                    <td>
+                        {{ analysis["resume_filename"] }}
+                    </td>
+
+                    <td class="history-score">
+                        {{ analysis["match_score"] }}%
+                    </td>
+
+                    <td>
+                        {{ analysis["skill_match_percentage"] }}%
+                    </td>
+
+                    <td>
+                        {{ analysis["job_category"] }}
+                    </td>
+
+                    <td>
+                        {{ analysis["category_confidence"] }}%
+                    </td>
+
+                    <td>
+                        {{ analysis["created_at"] }}
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+    {% else %}
+
+
+    <!-- Empty State -->
+
+    <div class="panel empty-history">
+
+        <h2>
+            No Analyses Yet
+        </h2>
+
+        <p>
+            Upload your resume and analyze it against a job
+            description to create your first analysis.
+        </p>
+
+        <br>
+
+        <a href="/"
+           class="bottom-button">
+
+            Start Analysis
+
+        </a>
+
+    </div>
+
+    {% endif %}
+
+</div>
+
+
+<footer class="footer">
+
+    <p>
+        AI Resume Screening & Job Matching System
+    </p>
+
+    <p>
+        Resume analysis powered by machine learning and NLP.
+    </p>
+
+</footer>
+
+</body>
+
+</html>

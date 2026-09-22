@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>{{ job["title"] }} - Job Details</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/style.css') }}"
+    >
+
+</head>
+
+<body>
+
+<div class="dashboard">
+
+    <div class="dashboard-header">
+
+        <div>
+
+            <h1>{{ job["title"] }}</h1>
+
+            <p>
+                {{ job["company_name"] }}
+            </p>
+
+        </div>
+
+        <div class="header-buttons">
+
+            <a href="/" class="btn">
+                New Analysis
+            </a>
+
+        </div>
+
+    </div>
+
+
+    <div class="panel job-details-panel">
+
+        <h2>Job Details</h2>
+
+        <div class="job-details-grid">
+
+            <div class="job-detail-item">
+
+                <span>Company</span>
+
+                <strong>
+                    {{ job["company_name"] or "Not available" }}
+                </strong>
+
+            </div>
+
+
+            <div class="job-detail-item">
+
+                <span>Location</span>
+
+                <strong>
+                    {{ job["location"] or "Not available" }}
+                </strong>
+
+            </div>
+
+
+            <div class="job-detail-item">
+
+                <span>Category</span>
+
+                <strong>
+                    {{ job["category"] }}
+                </strong>
+
+            </div>
+
+
+            <div class="job-detail-item">
+
+                <span>Job ID</span>
+
+                <strong>
+                    {{ job["job_id"] }}
+                </strong>
+
+            </div>
+
+        </div>
+
+
+        <div class="job-description">
+
+            <h2>Job Description</h2>
+
+            <p>
+                {{ job["description"] }}
+            </p>
+
+        </div>
+
+
+        <div class="job-detail-actions">
+
+            {% if job["application_url"] %}
+
+            <a
+                href="{{ job['application_url'] }}"
+                target="_blank"
+                class="btn">
+                Apply for Job
+            </a>
+
+            {% elif job["job_posting_url"] %}
+
+            <a
+                href="{{ job['job_posting_url'] }}"
+                target="_blank"
+                class="btn">
+                View Job Posting
+            </a>
+
+            {% else %}
+
+            <p>
+                Application link is not available.
+            </p>
+
+            {% endif %}
+
+
+            <a
+                href="/"
+                class="btn secondary-btn">
+                Back
+            </a>
+
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+
+</html>

@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Model Performance</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-chart-matrix@2.0.1"></script>
+
+</head>
+
+
+<body>
+
+
+<nav class="navbar">
+
+    <div class="nav-container">
+
+        <div class="logo">
+            AI Resume Matcher
+        </div>
+
+        <div class="nav-links">
+
+            <a href="/">
+                Home
+            </a>
+
+            <a href="/history">
+                History
+            </a>
+
+            <a href="/model-performance">
+                ML Performance
+            </a>
+
+        </div>
+
+    </div>
+
+</nav>
+
+
+<div class="result-container">
+
+
+    <!-- Header -->
+
+    <div class="result-header">
+
+        <h1>
+            Machine Learning Performance
+        </h1>
+
+        <p>
+            Evaluation of the job-category classification models
+            used by the AI Resume Matcher.
+        </p>
+
+    </div>
+
+
+    {% if model_results %}
+
+
+    <!-- Best Model -->
+
+    <div class="panel">
+
+        <h2>
+            Selected Model
+        </h2>
+
+        <p class="section-description">
+            The model with the highest weighted F1 score
+            is selected for deployment.
+        </p>
+
+
+        <div class="classification-grid">
+
+            <div class="classification-card">
+
+                <span>
+                    Best Model
+                </span>
+
+                <strong>
+                    {{ best_model.model }}
+                </strong>
+
+            </div>
+
+
+            <div class="classification-card">
+
+                <span>
+                    Weighted F1
+                </span>
+
+                <strong>
+                    {{ best_model.weighted_f1 }}%
+                </strong>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- Model Comparison Chart -->
+
+    <div class="panel">
+
+        <h2>
+            Model Comparison
+        </h2>
+
+        <p class="section-description">
+            Comparison of classification performance across
+            the trained machine-learning models.
+        </p>
+
+
+        <div class="chart-container">
+
+            <canvas id="modelComparisonChart"></canvas>
+
+        </div>
+
+    </div>
+
+    <div class="panel">
+
+    <h2>
+        Confusion Matrix
+    </h2>
+
+    <p class="section-description">
+        The confusion matrix shows how the selected model
+        classified each job category on the test set.
+    </p>
+
+    <div class="chart-container">
+
+        <canvas id="confusionMatrixChart"></canvas>
+
+    </div>
+
+</div>
+
+    <!-- Performance Table -->
+
+    <div class="panel">
+
+        <h2>
+            Detailed Performance
+        </h2>
+
+        <p class="section-description">
+            Evaluation metrics calculated on the held-out test set.
+        </p>
+
+
+        <div class="history-table-container">
+
+            <table class="history-table">
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            Model
+                        </th>
+
+                        <th>
+                            Accuracy
+                        </th>
+
+                        <th>
+                            Precision
+                        </th>
+
+                        <th>
+                            Recall
+                        </th>
+
+                        <th>
+                            Weighted F1
+                        </th>
+
+                        <th>
+                            Macro F1
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                    {% for result in model_results %}
+
+                    <tr>
+
+                        <td>
+                            <strong>
+                                {{ result.model }}
+                            </strong>
+                        </td>
+
+                        <td>
+                            {{ result.accuracy }}%
+                        </td>
+
+                        <td>
+                            {{ result.precision }}%
+                        </td>
+
+                        <td>
+                            {{ result.recall }}%
+                        </td>
+
+                        <td class="history-score">
+                            {{ result.weighted_f1 }}%
+                        </td>
+
+                        <td>
+                            {{ result.macro_f1 }}%
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+
+    <!-- Explanation -->
+
+    <div class="panel">
+
+        <h2>
+            Evaluation Metrics
+        </h2>
+
+
+        <div class="breakdown-grid">
+
+
+            <div class="breakdown-card">
+
+                <h3>
+                    Accuracy
+                </h3>
+
+                <p>
+                    Percentage of test samples classified
+                    correctly.
+                </p>
+
+            </div>
+
+
+            <div class="breakdown-card">
+
+                <h3>
+                    Precision
+                </h3>
+
+                <p>
+                    Measures how many predictions assigned
+                    to a class were correct.
+                </p>
+
+            </div>
+
+
+            <div class="breakdown-card">
+
+                <h3>
+                    Recall
+                </h3>
+
+                <p>
+                    Measures how effectively the model
+                    identifies samples belonging to a class.
+                </p>
+
+            </div>
+
+
+            <div class="breakdown-card">
+
+                <h3>
+                    Weighted F1
+                </h3>
+
+                <p>
+                    Harmonic mean of precision and recall,
+                    weighted according to class support.
+                </p>
+
+            </div>
+
+
+            <div class="breakdown-card">
+
+                <h3>
+                    Macro F1
+                </h3>
+
+                <p>
+                    Average F1 score across classes,
+                    giving each class equal weight.
+                </p>
+
+            </div>
+
+
+            <div class="breakdown-card">
+
+                <h3>
+                    Test Set
+                </h3>
+
+                <p>
+                    Evaluation is performed using the
+                    held-out portion of the dataset.
+                </p>
+
+            </div>
+
+
+        </div>
+
+    </div>
+
+
+    {% else %}
+
+
+    <!-- No Results -->
+
+    <div class="panel empty-history">
+
+        <h2>
+            Model Results Not Available
+        </h2>
+
+        <p>
+            Run train_model.py first to generate
+            model evaluation results.
+        </p>
+
+    </div>
+
+
+    {% endif %}
+
+
+</div>
+
+
+<footer class="footer">
+
+    <p>
+        AI Resume Screening & Job Matching System
+    </p>
+
+    <p>
+        Machine Learning Model Evaluation
+    </p>
+
+</footer>
+
+
+<script>
+
+const modelResults = {{ model_results | tojson }};
+
+const labels = modelResults.map(
+    result => result.model
+);
+
+
+const accuracy = modelResults.map(
+    result => result.accuracy
+);
+
+
+const precision = modelResults.map(
+    result => result.precision
+);
+
+
+const recall = modelResults.map(
+    result => result.recall
+);
+
+
+const weightedF1 = modelResults.map(
+    result => result.weighted_f1
+);
+
+
+const macroF1 = modelResults.map(
+    result => result.macro_f1
+);
+
+
+if (modelResults.length > 0) {
+
+    new Chart(
+        document.getElementById(
+            "modelComparisonChart"
+        ),
+        {
+            type: "bar",
+
+            data: {
+
+                labels: labels,
+
+                datasets: [
+
+                    {
+                        label: "Accuracy",
+                        data: accuracy
+                    },
+
+                    {
+                        label: "Precision",
+                        data: precision
+                    },
+
+                    {
+                        label: "Recall",
+                        data: recall
+                    },
+
+                    {
+                        label: "Weighted F1",
+                        data: weightedF1
+                    },
+
+                    {
+                        label: "Macro F1",
+                        data: macroF1
+                    }
+
+                ]
+
+            },
+
+            options: {
+
+                responsive: true,
+
+                scales: {
+
+                    y: {
+
+                        beginAtZero: true,
+
+                        max: 100,
+
+                        title: {
+
+                            display: true,
+
+                            text: "Score (%)"
+
+                        }
+
+                    }
+
+                }
+
+            }
+
+        }
+    );
+
+}
+
+const confusionData = {{ confusion_data | tojson }};
+
+if (
+    confusionData.labels.length > 0 &&
+    confusionData.matrix.length > 0
+) {
+
+    const labels = confusionData.labels;
+
+    const values = [];
+
+    for (let i = 0; i < labels.length; i++) {
+
+        for (let j = 0; j < labels.length; j++) {
+
+            values.push({
+                x: labels[j],
+                y: labels[i],
+                value: confusionData.matrix[i][j]
+            });
+
+        }
+
+    }
+
+
+    new Chart(
+        document.getElementById(
+            "confusionMatrixChart"
+        ),
+        {
+            type: "matrix",
+
+            data: {
+
+                datasets: [
+
+                    {
+                        label: "Confusion Matrix",
+
+                        data: values,
+
+                        backgroundColor: function(context) {
+
+                            const value =
+                                context.raw.value;
+
+                            const intensity =
+                                Math.min(
+                                    0.9,
+                                    0.15 +
+                                    value / 100
+                                );
+
+                            return `rgba(
+                                79,
+                                70,
+                                229,
+                                ${intensity}
+                            )`;
+
+                        },
+
+                        borderWidth: 1,
+
+                        width: function(context) {
+
+                            const chart =
+                                context.chart;
+
+                            return (
+                                chart.chartArea.width /
+                                labels.length
+                            ) - 2;
+
+                        },
+
+                        height: function(context) {
+
+                            const chart =
+                                context.chart;
+
+                            return (
+                                chart.chartArea.height /
+                                labels.length
+                            ) - 2;
+
+                        }
+
+                    }
+
+                ]
+
+            },
+
+            options: {
+
+                responsive: true,
+
+                plugins: {
+
+                    tooltip: {
+
+                        callbacks: {
+
+                            label: function(context) {
+
+                                return (
+                                    "Predicted: " +
+                                    context.raw.x +
+                                    ", Actual: " +
+                                    context.raw.y +
+                                    ", Count: " +
+                                    context.raw.value
+                                );
+
+                            }
+
+                        }
+
+                    }
+
+                },
+
+                scales: {
+
+                    x: {
+
+                        type: "category",
+
+                        labels: labels,
+
+                        title: {
+
+                            display: true,
+
+                            text: "Predicted Category"
+
+                        }
+
+                    },
+
+                    y: {
+
+                        type: "category",
+
+                        labels: labels,
+
+                        title: {
+
+                            display: true,
+
+                            text: "Actual Category"
+
+                        },
+
+                        reverse: true
+
+                    }
+
+                }
+
+            }
+
+        }
+    );
+
+}
+
+</script>
+
+
+</body>
+
+</html>

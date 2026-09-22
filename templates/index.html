@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>AI Resume Screening & Job Matching System</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+
+</head>
+
+
+<body>
+
+
+<!-- ================= NAVBAR ================= -->
+
+<nav class="navbar">
+
+    <div class="nav-container">
+
+        <div class="logo">
+            AI Resume Matcher
+        </div>
+
+        <div class="nav-links">
+
+            <a href="/">
+                Home
+            </a>
+
+            <a href="/history">
+                Analysis History
+            </a>
+
+            <a href="/model-performance">
+    ML Performance
+</a>
+
+        </div>
+
+    </div>
+
+</nav>
+
+
+
+<!-- ================= HERO ================= -->
+
+<section class="hero">
+
+    <div class="hero-container">
+
+        <div class="hero-content">
+
+            <span class="badge">
+                AI-Powered Resume Analysis
+            </span>
+
+            <h1>
+                AI Resume Screening
+                <br>
+                & Job Matching System
+            </h1>
+
+            <p>
+                Analyze your resume against a job description,
+                identify skill gaps, calculate your match score,
+                and discover relevant job opportunities.
+            </p>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+
+<!-- ================= ANALYSIS CARD ================= -->
+
+<section class="analysis-section">
+
+    <div class="analysis-container">
+
+
+        <div class="analysis-card">
+
+            <div class="card-header">
+
+                <h2>
+                    Analyze Your Resume
+                </h2>
+
+                <p>
+                    Upload your resume and enter the target job
+                    description to begin the analysis.
+                </p>
+
+            </div>
+
+
+
+            <form
+                action="/analyze"
+                method="POST"
+                enctype="multipart/form-data"
+                id="analysisForm"
+            >
+
+
+                <!-- RESUME -->
+
+                <div class="form-group">
+
+                    <label for="resume">
+                        Upload Resume
+                    </label>
+
+                    <div class="upload-box">
+
+                        <div class="upload-icon">
+                            📄
+                        </div>
+
+                        <div>
+
+                            <h3>
+                                Choose your resume
+                            </h3>
+
+                            <p>
+                                PDF files only · Maximum 5 MB
+                            </p>
+
+                        </div>
+
+                        <input
+                            type="file"
+                            id="resume"
+                            name="resume"
+                            accept=".pdf,application/pdf"
+                            required
+                        >
+
+                    </div>
+
+                    <div
+                        id="fileName"
+                        class="file-name"
+                    ></div>
+
+                </div>
+
+
+
+                <!-- JOB DESCRIPTION -->
+
+                <div class="form-group">
+
+                    <label for="job_description">
+                        Job Description
+                    </label>
+
+                    <textarea
+                        id="job_description"
+                        name="job_description"
+                        placeholder="Paste the complete job description here..."
+                        required
+                    ></textarea>
+
+                    <div class="textarea-info">
+
+                        <span>
+                            Include skills, requirements and responsibilities.
+                        </span>
+
+                        <span id="characterCount">
+                            0 characters
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- BUTTON -->
+
+                <button
+                    type="submit"
+                    class="analyze-button"
+                    id="analyzeButton"
+                >
+
+                    <span id="buttonText">
+                        Analyze Resume
+                    </span>
+
+                    <span
+                        id="loadingText"
+                        style="display:none;"
+                    >
+                        Analyzing...
+                    </span>
+
+                </button>
+
+
+            </form>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+
+<!-- ================= FEATURES ================= -->
+
+<section class="features-section">
+
+    <div class="features-container">
+
+        <div class="section-heading">
+
+            <span class="badge">
+                What the System Does
+            </span>
+
+            <h2>
+                Intelligent Resume Analysis
+            </h2>
+
+            <p>
+                Get a detailed understanding of how your resume
+                matches your target job.
+            </p>
+
+        </div>
+
+
+
+        <div class="features-grid">
+
+
+            <div class="feature-card">
+
+                <div class="feature-icon">
+                    🎯
+                </div>
+
+                <h3>
+                    Match Score
+                </h3>
+
+                <p>
+                    Calculate an overall resume-job match score
+                    using multiple matching factors.
+                </p>
+
+            </div>
+
+
+
+            <div class="feature-card">
+
+                <div class="feature-icon">
+                    🧠
+                </div>
+
+                <h3>
+                    AI Job Classification
+                </h3>
+
+                <p>
+                    Predict the job category associated with
+                    your resume and target position.
+                </p>
+
+            </div>
+
+
+
+            <div class="feature-card">
+
+                <div class="feature-icon">
+                    🔍
+                </div>
+
+                <h3>
+                    Skill Gap Analysis
+                </h3>
+
+                <p>
+                    Identify matched and missing skills required
+                    for the selected job.
+                </p>
+
+            </div>
+
+
+
+            <div class="feature-card">
+
+                <div class="feature-icon">
+                    📚
+                </div>
+
+                <h3>
+                    Learning Roadmap
+                </h3>
+
+                <p>
+                    Get recommendations for skills that can
+                    improve your job readiness.
+                </p>
+
+            </div>
+
+
+
+            <div class="feature-card">
+
+                <div class="feature-icon">
+                    💼
+                </div>
+
+                <h3>
+                    Job Recommendations
+                </h3>
+
+                <p>
+                    Discover relevant job postings based on
+                    your resume profile.
+                </p>
+
+            </div>
+
+
+
+            <div class="feature-card">
+
+                <div class="feature-icon">
+                    📊
+                </div>
+
+                <h3>
+                    Analysis History
+                </h3>
+
+                <p>
+                    Track your previous resume analyses and
+                    compare your matching performance.
+                </p>
+
+            </div>
+
+
+        </div>
+
+    </div>
+
+</section>
+
+
+
+<!-- ================= FOOTER ================= -->
+
+<footer class="footer">
+
+    <p>
+        AI Resume Screening & Job Matching System
+    </p>
+
+    <p>
+        Built with Python · Flask · Machine Learning · SQLite
+    </p>
+
+</footer>
+
+
+
+<!-- ================= JAVASCRIPT ================= -->
+
+<script>
+
+    const resumeInput =
+        document.getElementById("resume");
+
+    const fileName =
+        document.getElementById("fileName");
+
+    const jobDescription =
+        document.getElementById("job_description");
+
+    const characterCount =
+        document.getElementById("characterCount");
+
+    const form =
+        document.getElementById("analysisForm");
+
+    const analyzeButton =
+        document.getElementById("analyzeButton");
+
+    const buttonText =
+        document.getElementById("buttonText");
+
+    const loadingText =
+        document.getElementById("loadingText");
+
+
+
+    /* ================= FILE NAME ================= */
+
+    resumeInput.addEventListener(
+        "change",
+        function () {
+
+            if (this.files.length > 0) {
+
+                const file =
+                    this.files[0];
+
+                fileName.textContent =
+                    "Selected: " + file.name;
+
+            } else {
+
+                fileName.textContent = "";
+
+            }
+
+        }
+    );
+
+
+
+    /* ================= CHARACTER COUNT ================= */
+
+    jobDescription.addEventListener(
+        "input",
+        function () {
+
+            const length =
+                this.value.length;
+
+            characterCount.textContent =
+                length + " characters";
+
+        }
+    );
+
+
+
+    /* ================= FORM SUBMIT ================= */
+
+    form.addEventListener(
+        "submit",
+        function () {
+
+            analyzeButton.disabled = true;
+
+            buttonText.style.display = "none";
+
+            loadingText.style.display = "inline";
+
+        }
+    );
+
+</script>
+
+
+</body>
+
+</html>
